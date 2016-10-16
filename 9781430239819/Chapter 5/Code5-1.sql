@@ -1,0 +1,207 @@
+CREATE DATABASE [SmartCommunityBank]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'SmartCommunityBank', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\SmartCommunityBank.mdf' , SIZE = 4096KB , FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'SmartCommunityBank_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL11.MSSQLSERVER\MSSQL\DATA\SmartCommunityBank_log.ldf' , SIZE = 1024KB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [SmartCommunityBank] SET COMPATIBILITY_LEVEL = 110
+GO
+ALTER DATABASE [SmartCommunityBank] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET AUTO_CREATE_STATISTICS ON 
+GO
+ALTER DATABASE [SmartCommunityBank] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [SmartCommunityBank] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [SmartCommunityBank] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [SmartCommunityBank] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [SmartCommunityBank] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [SmartCommunityBank] SET  READ_WRITE 
+GO
+ALTER DATABASE [SmartCommunityBank] SET RECOVERY FULL 
+GO
+ALTER DATABASE [SmartCommunityBank] SET  MULTI_USER 
+GO
+ALTER DATABASE [SmartCommunityBank] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [SmartCommunityBank] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+USE [SmartCommunityBank]
+GO
+IF NOT EXISTS (SELECT name FROM sys.filegroups WHERE is_default=1 AND name = N'PRIMARY') ALTER DATABASE [SmartCommunityBank] MODIFY FILEGROUP [PRIMARY] DEFAULT
+GO
+
+USE [master]
+GO
+
+CREATE DATABASE [VetClinic]
+GO
+
+USE [master]
+GO
+
+ALTER DATABASE VetClinic
+SET RECOVERY FULL
+GO
+
+USE [master]
+GO
+
+CREATE LOGIN ReceptionistUser WITH PASSWORD='hj2(*h2hBM!@jsx'
+GO
+
+USE [VetClinic]
+GO
+
+CREATE TABLE [Pets]
+(pet_id      INT  PRIMARY KEY,
+pet_name    VARCHAR(50)  NOT NULL,
+pet_weight   INT           NOT NULL)
+GO
+
+USE [VetClinic]
+GO
+
+INSERT INTO Pets VALUES
+ (1,'Zeus',185),
+(2,'Lady',155),
+(3,'Deno',50)
+GO
+
+SELECT * FROM Pets
+GO
+
+USE [VetClinic]
+GO
+
+GRANT SELECT ON Pets TO ReceptionistUser
+GO
+
+USE [VetClinic]
+GO
+
+/****** Object:  Table [dbo].[Store Location]   ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Store Location](
+    [store_id] [int] NOT NULL,
+    [store_zip_code] [int] NULL,
+ CONSTRAINT [PK_Store Location] PRIMARY KEY CLUSTERED
+(
+    [store_id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF,
+IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON,
+ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [Store Location]
+     ADD [Store Manager] VARCHAR(50)
+
+GO
+
+ALTER TABLE Pets  WITH CHECK
+     ADD  CONSTRAINT [CK_Pets]
+         CHECK  (([pet_weight]>0 AND [pet_weight]<1000))
+GO
+
+CREATE TABLE Medication
+(med_id INT PRIMARY KEY,
+med_name VARCHAR(50) CONSTRAINT u_med_name UNIQUE,
+med_supplier VARCHAR(50) NOT NULL)
+GO
+
+INSERT INTO Medication VALUES (1, 'Cyclosporine 5mg', 'Generic Drugs Inc')
+INSERT INTO Medication VALUES (2, 'Cyclosporine 5mg', 'ACME Vet Drugs')
+
+CREATE TABLE [Owners]
+(owner_id    INT    PRIMARY KEY,
+pet_id       INT    REFERENCES Pets(pet_id),
+owner_name  VARCHAR(50) NOT NULL)
+GO
+
+INSERT INTO Owners VALUES (1,20,'Julie')
+GO
+
+CREATE TABLE Customers
+(customer_id INT PRIMARY KEY,
+customer_name NVARCHAR(50) NOT NULL)
+GO
+
+CREATE TABLE Accounts
+(customer_id INT REFERENCES Customers(customer_id),
+account_balance MONEY)
+GO
+
+DROP TABLE Accounts
+GO
+
+DROP TABLE Customers
+GO
+
+CREATE TABLE Products
+(product_id INT IDENTITY(1,1) NOT NULL,
+product_price DECIMAL(9,2) NOT NULL)
+GO
+
+DECLARE @i INT;
+DECLARE @price DECIMAL(9,2);
+
+SET @i=0;
+WHILE (@i<100000)
+BEGIN
+SET @price= ROUND((RAND()*1000),2)
+
+INSERT INTO Products(product_price) VALUES (@price)
+
+SET @i=@i+1
+
+END
+GO
+
+SELECT COUNT(product_id) FROM Products WHERE
+product_price BETWEEN 400 AND 700
+GO
+
+CREATE CLUSTERED INDEX CI_Price ON Products(product_price)
+GO
+
+SELECT COUNT(product_id) FROM Products WHERE
+product_price BETWEEN 400 AND 700
+GO

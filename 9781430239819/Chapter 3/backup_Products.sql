@@ -1,0 +1,1 @@
+BACKUP DATABASE [Products] TO DISK='D:\SQLServer\Backups\Products.bak'

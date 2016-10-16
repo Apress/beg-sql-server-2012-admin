@@ -1,0 +1,35 @@
+USE [model]
+GO
+
+CREATE TABLE Sales
+(i INT)
+GO
+
+USE [master]
+GO
+
+CREATE DATABASE SmartSalesDB
+GO
+USE [SmartSalesDB]
+GO
+
+SELECT name,type_desc FROM sys.tables
+GO
+CREATE DATABASE [Sales] ON  PRIMARY
+( NAME = N'Sales', FILENAME = N'C:\DATA\Sales.mdf' ),
+ FILEGROUP [OlderSales]
+( NAME = N'Sales2', FILENAME = N'D:\DATA\Sales2.ndf' )
+ LOG ON
+( NAME = N'Sales_log', FILENAME = N'M:\LOG\Sales_log.ldf' )
+GO
+CREATE TABLE Customers
+(customer_id INT PRIMARY KEY)
+ON [OlderSales]
+ALTER DATABASE [SmartSalesDB] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
+GO
+ALTER DATABASE [SmartSalesDB] SET  RESTRICTED_USER
+GO
+ALTER DATABASE [SmartSalesDB] SET  MULTI_USER
+GO
+ALTER DATABASE [SmartSalesDB] SET OFFLINE
+GO
